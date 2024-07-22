@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environments';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { AuthStatus, LoginResponse, User } from '../interfaces';
 
 @Injectable({
@@ -30,6 +30,7 @@ export class AuthServiceService {
         }),
         map(() => true),
         //TODO: errors
+        catchError(err => throwError(() => err.error.message))
       )
   }
 }
