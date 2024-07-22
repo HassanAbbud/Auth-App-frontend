@@ -20,7 +20,8 @@
         <input class="input100"
                type="password"
                placeholder="Ingrese su contraseña"
-               formGroupName="password">
+               formControlName="password"
+               >
         <span class="focus-input100"></span>
     </div>
 
@@ -30,7 +31,8 @@
         <div class="wrap-login100-form-btn">
             <div class="login100-form-bgbtn"></div>
             <button class="login100-form-btn"
-                    type="submit">
+                    type="submit"
+                    [disabled]="myForm.invalid">
                 Login
             </button>
         </div>
