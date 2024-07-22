@@ -1,8 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environments';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { AuthStatus, User } from '../interfaces';
+import { map, Observable, tap } from 'rxjs';
+import { AuthStatus, LoginResponse, User } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +14,22 @@ export class AuthServiceService {
   private _currentUser = signal<User|null>(null);
   private _authStatus = signal<AuthStatus>(AuthStatus.cehcking);
 
+  public currentUser = computed(() => this._currentUser);
+  public authStatus = computed(() => this._authStatus);
   constructor() { }
 
-  login(): Observable<boolean>{
-    return of(true);
+  login(email: string, password: string): Observable<boolean>{
+    const url = `${this.baseUrl}/auth/login`;
+    const body = {email, password};
+
+    return this.http.post<LoginResponse>(url, body)
+      .pipe(
+        tap( ({user, token}) => {
+          this._currentUser.set(user)
+          this._authStatus.set(AuthStatus.authenticated)
+        }),
+        map(() => true),
+        //TODO: errors
+      )
   }
 }
