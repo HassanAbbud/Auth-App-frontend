@@ -7,15 +7,16 @@ import { AuthStatus, LoginResponse, User } from '../interfaces';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthServiceService {
+export class AuthService {
   private readonly baseUrl: string = environment.baseUrl;
   private http = inject(HttpClient);
 
   private _currentUser = signal<User|null>(null);
-  private _authStatus = signal<AuthStatus>(AuthStatus.cehcking);
+  private _authStatus = signal<AuthStatus>( AuthStatus.checking );
 
-  public currentUser = computed(() => this._currentUser);
-  public authStatus = computed(() => this._authStatus);
+  public currentUser = computed( () => this._currentUser() );
+  public authStatus = computed( () => this._authStatus() );
+
   constructor() { }
 
   login(email: string, password: string): Observable<boolean>{
@@ -27,6 +28,7 @@ export class AuthServiceService {
         tap( ({user, token}) => {
           this._currentUser.set(user)
           this._authStatus.set(AuthStatus.authenticated)
+          localStorage.setItem("token", token)
         }),
         map(() => true),
         //TODO: errors
